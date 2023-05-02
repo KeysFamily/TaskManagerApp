@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------------
 // タスク管理アプリ/タスク一覧
-// 作　成　者：長谷川英一
+// 作　成　者：長谷川勇一朗
 // 作成年月日：2023/3/22
 // 機　　　能：タスクの一覧表示
 //-----------------------------------------------------------------------------
@@ -190,7 +190,6 @@ bool TaskList::LoadData() {
 	String manager;      //担当者
 
 	for (auto i : step(counter)) {
-		Logger << U"ループ頭。02";
 		reader(
 			pos,
 			taskID,
@@ -202,7 +201,6 @@ bool TaskList::LoadData() {
 			deadline,
 			manager
 		);
-		Logger << U"読み込みました。03";
 		//読み込んだファイルをタスクオブジェクトを代入します
 		TaskObject::SP to (new TaskObject(
 			pos,
@@ -216,7 +214,6 @@ bool TaskList::LoadData() {
 				deadline,
 				manager
 			)));
-		Logger << U"データを書き込みました。04";
 		//オブジェクトを追加する
 		add.emplace_back(to);
 		
