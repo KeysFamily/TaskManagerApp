@@ -118,8 +118,8 @@ void TaskList::update() {
 			TaskRemove();
 		}
 	}
-	//タスクオブジェクトの更新処理
 
+	//タスクオブジェクトの更新処理
 	for (auto& o : getData().vec) {
 		(*o).update();
 		if ((*o).isSelect() == true) {
@@ -175,7 +175,7 @@ bool TaskList::LoadData() {
 		return false;
 	}
 
-	size_t counter;
+	size_t counter;						//タスクオブジェクトの数
 
 	reader(getData().ID_Max,counter);	//IDの最大値を読み込む
 
@@ -219,6 +219,7 @@ bool TaskList::LoadData() {
 		
 	}
 
+	//読込を終了する
 	reader->close();
 
 	return true;
@@ -234,9 +235,11 @@ bool TaskList::SaveDate() {
 		return false;
 	}
 
+	//ファイルデータを一度消去する
 	writer->clear();
+
 	//ファイルの書き込みをする
-	
+	//IDの最大値とタスクオブジェクトの総数を入力する
 	writer(getData().ID_Max, getData().vec.size());
 	for (auto& o : getData().vec) {
 		TaskManagement data = (*o).GetTaskDate();

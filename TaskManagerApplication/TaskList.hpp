@@ -20,15 +20,11 @@ public:
 	void update() override;
 	void draw() const override;
 	
-
 	//以下はこのシーンで処理をする
-
 
 	//data.taskに処理を行う
 	bool LoadData();	//ファイルの読み込みを行う
-
 	bool SaveDate();	//ファイルの保存を行う
-
 
 	//タスクオブジェクトを生成する
 	bool TaskCreate(TaskManagement task_);
@@ -36,6 +32,6 @@ public:
 	//選択したオブジェクトを削除する
 	bool TaskRemove();
 
-	//タスクオブジェクトの検索
+	//指定したIDを持つタスクオブジェクトを一つ返す
 	TaskObject::SP TaskSearch(int32 id_);
 };

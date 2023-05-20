@@ -24,7 +24,7 @@ void Start::update() {
 	//ボタンをクリックされたら
 	if (buttonRect.movedBy(Scene::Center()).leftClicked()) {
 
-		//「新規作成ボタン」
+		//「新規作成」
 		changeScene(State::CreateNewTaskFile, 0.1s);
 	}
 	else if (buttonRect.movedBy(Scene::Center().x, Scene::Size().y * 3 / 4).leftClicked()) {
