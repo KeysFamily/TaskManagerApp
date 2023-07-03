@@ -11,21 +11,23 @@ CreateNewTaskFile::CreateNewTaskFile(const InitData& init)
 	, tes{ U"" }
 {
 	Scene::SetBackground(Palette::Yellowgreen);
-	System::SetTerminationTriggers({});
+	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 }
 
 void CreateNewTaskFile::update() {
 	
 	//入力ボックス
-	SimpleGUI::TextBoxAt(tes, Scene::Center(), 1000, 50);
+	SimpleGUI::TextBoxAt(tes, Scene::Center(), 1050, 50);
 
 
 	//リセットボタン
-	if (SimpleGUI::Button(U"入力リセット", Vec2{ 850,400 }, 300)) {
+	if (SimpleGUI::Button(U"入力リセット(Ctrl+R)", Vec2{ 925,400 }, 240) || (KeyControl + KeyR).down()) {
 		tes.clear();
 	}
 	//作成ボタン（入力されていなければ使用不可）
-	if (SimpleGUI::Button(U"作成", Vec2{ 850,600 }, 150, tes.text.size() > 0)) {
+	if (SimpleGUI::Button(U"作成(Ctrl+Enter)", Vec2{ 925,550 }, 240, tes.text.size() > 0)
+		|| (KeyControl + KeyEnter).down() && tes.text.size() > 0
+		) {
 		//フォルダを作成（この中にタスクデータを保存する）
 		//現在のカレントディレクトリを取得する
 		FilePath fp = FileSystem::CurrentDirectory();
@@ -35,7 +37,7 @@ void CreateNewTaskFile::update() {
 		if (FileSystem::Exists(fp) == false) {	//もしも、同名ディレクトリが存在していなければ
 			FileSystem::CreateDirectories(fp);	//ディレクトリを作成
 
-			//書き込みファイルを生成する（ただし、何も書き込まない）
+			//data.taskを生成する（ただし、何も書き込まない）
 			// シリアライズ機能を持つバイナルファイル
 			Serializer<BinaryWriter> writer{ fp + U"/data.task" };
 
@@ -51,6 +53,14 @@ void CreateNewTaskFile::update() {
 
 			writer->close();
 
+			//subtask.csvを生成
+			TextWriter writerCSV{ fp + U"/Subtask.csv" };
+			if(not writerCSV){ /*エラーあり*/ }
+			String output;
+			output += U"タスクID,タイトル,説明,優先度,作成日,締切日,完了時間,担当者";
+			writerCSV.write(output);
+
+			writerCSV.close();
 
 			getData().isFileOpen = false;	//ファイルを開いた。
 
@@ -66,7 +76,7 @@ void CreateNewTaskFile::update() {
 	}
 
 	//キャンセルボタン
-	if (SimpleGUI::Button(U"キャンセル", Vec2{ 1000,600 }, 150)) {
+	if (SimpleGUI::Button(U"キャンセル(ESC)", Vec2{ 925,600 }, 240) || KeyEscape.down()) {
 		changeScene(State::Start, 0.1s);
 	}
 

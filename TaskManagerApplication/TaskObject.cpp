@@ -43,7 +43,6 @@ void TaskObject::update() {
 	}
 
 	if (grip) {
-
 		//外にはみ出すことを防ぐ
 
 		if (pos.x < 0) { pos.x = 0; }
@@ -58,38 +57,40 @@ void TaskObject::update() {
 void TaskObject::draw() {
 	RectF drawBox = taskBox.movedBy(pos); //オブジェクト
 
-	Color stringColor = Palette::White;   //文字の色
+	Color stringColor = Palette::White; //文字の色
+	Color frameColor = Palette::White;	//黒
+	Color boxColor = Palette::White;	//タスクオブジェクトの色
 
 	//優先度によってオブジェクトの色と文字色を変更する。
 	switch (taskDate.GetTaskPriority())
 	{
 	case Priority::Low:
-		//優先度が低いので緑系で表示
-		drawBox
-			.drawShadow(Vec2(10, 10), 5)
-			.draw(Palette::Skyblue)
-			.drawFrame(2, 0, selected ? Palette::Deepskyblue : Palette::Darkgray);
+		//優先度が低いので青系で表示
+		boxColor = Palette::Skyblue;
+		frameColor = selected ? Palette::Deepskyblue : Palette::Darkgray;
 		stringColor = Palette::Deepskyblue;
 		break;
 	case Priority::Medium:
 		//優先度は普通なので黄系で表示
-		drawBox
-			.drawShadow(Vec2(10, 10), 5)
-			.draw(Palette::Yellow)
-			.drawFrame(2, 0, selected ? Palette::Olive : Palette::Darkgray);
+		boxColor = Palette::Yellow;
+		frameColor = selected ? Palette::Olive : Palette::Darkgray;
 		stringColor = Palette::Olive;
 		break;
 	case Priority::High:
 		//優先度が高いので赤系で表示する
-		drawBox
-			.drawShadow(Vec2(10, 10), 5)
-			.draw(Palette::Red)
-			.drawFrame(2, 0, selected ? Palette::Darkred : Palette::Darkgray);
+		boxColor = Palette::Red;
+		frameColor = selected ? Palette::Darkred : Palette::Darkgray;
 		stringColor = Palette::Darkred;
 		break;
 	}
 
-	//締切に近い場合、表示文字を変更する
+	//箱の描画
+	drawBox
+		.drawShadow(Vec2(10, 10), 5)	//影の描画
+		.draw(boxColor)					//オブジェクトの描画
+		.drawFrame(selected ? 5 : 2, 0, frameColor);	//枠の描画
+
+	//締切まで10日以内ならに近い場合、表示文字を黒に変更する
 	if (Date::Subtract(taskDate.GetTaskDeadline(), Date::Today()) <= Days(10_d)) {
 		stringColor = Palette::Black;
 	}
@@ -97,6 +98,7 @@ void TaskObject::draw() {
 	//以下で表示文字を記述
 	//タスクID
 	FontAsset(U"TaskViewFont")(U"TaskID:{}"_fmt(taskID))
+	//FontAsset(U"TaskViewFont")(U"TaskID:{}"_fmt(99999999))
 		.draw(pos + Vec2{ 20,20 }, stringColor);
 	//タスクの名前（矩形を用意その中に文字を描画する）
 	FontAsset(U"CreateFont")(U"{}"_fmt(taskDate.GetTaskTitle()))
@@ -108,7 +110,7 @@ void TaskObject::draw() {
 
 	//担当者
 	FontAsset(U"TaskViewFont")(U"担当者:{}"_fmt(taskDate.GetTaskManager()))
-		.draw(pos + Vec2{ 20,140 }, stringColor);
+		.draw(RectF{ pos + Vec2{ 20,140 } ,160,30 }, stringColor);
 
 	//締切
 	FontAsset(U"TaskViewFont")(U"締切:{}"_fmt(taskDate.GetTaskDeadline()))
@@ -141,4 +143,8 @@ void TaskObject::SetTaskDate(TaskManagement date_) {
 
 void TaskObject::SetDead() {
 	deadFlag = true;
+}
+
+void TaskObject::SetUnSelect() {
+	selected = false;
 }

@@ -16,7 +16,7 @@ TaskEdit::TaskEdit(const InitData& init)
 
 
 	//新規作成でなければ（編集なら）
-	if (not getData().isCreate) {
+	if (getData().editMode == AppDate::EditMode::Edit) {
 		//現在のデータを読み込む
 		TaskManagement data = getData().EditBox.GetTaskDate();
 		titleLS.text = data.GetTaskTitle();
@@ -34,7 +34,7 @@ TaskEdit::TaskEdit(const InitData& init)
 
 		managerLS.text = data.GetTaskManager();
 	}
-	else {
+	else if(getData().editMode == AppDate::EditMode::Create){
 		//新規作成なら
 		titleLS.text = U"タイトル";
 		descriptionLS.text = U"説明";
@@ -78,7 +78,7 @@ void TaskEdit::update() {
 
 
 	//アクション
-	if (SimpleGUI::Button(getData().isCreate ? U"作成" : U"保存", Vec2{ 850,600 }, 150)) {
+	if (SimpleGUI::Button(getData().editMode == AppDate::EditMode::Create ? U"作成(Ctrl+Enter)" : U"保存(Ctrl+Enter)", Vec2{ 820,600 }, 180) || (KeyControl + KeyEnter).down()) {
 		//データ
 		if (deadlineDate.isValid() &&			//日付が正しいか?
 			titleLS.text.size() > 0 &&			//タイトル入力欄が空欄でないか？
@@ -105,7 +105,10 @@ void TaskEdit::update() {
 			System::MessageBoxOK(U"データが入力されていないか、日付が間違っている可能性があります。", MessageBoxStyle::Warning);
 		}
 	}
-	if (SimpleGUI::Button(U"キャンセル", Vec2{ 1030,600 }, 150)) {
+	if (SimpleGUI::Button(U"キャンセル(ESC)", Vec2{ 1000,600 }, 180) || KeyEscape.down()) {
+		if (getData().editMode == AppDate::EditMode::Create) {
+			getData().editMode = AppDate::EditMode::Non;
+		}
 		changeScene(State::TaskList, 0.1s);
 	}
 }
@@ -128,7 +131,7 @@ void TaskEdit::draw() const {
 
 	FontAsset(U"CreateFont")(U"作成日：{: >4}年{: >2}月{: >2}日"_fmt(createDate.year, createDate.month, createDate.day))
 		.draw(Vec2{ 640,300 }, Palette::Green);
-	FontAsset(U"CreateFont")(U"締切日：     年     月     日")
+	FontAsset(U"CreateFont")(U"締切日：        年       月       日")
 		.draw(Vec2{ 640,400 }, Palette::Green);
 
 	//入力された日付が正しいかどうかを審査する。

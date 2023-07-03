@@ -13,6 +13,7 @@ class TaskList :public App::Scene
 	Array<TaskObject::SP> add;
 
 	Optional<int> selectNum;
+	bool isChanged;	//変更されたか？
 
 public:
 	TaskList(const InitData& init);
@@ -30,7 +31,7 @@ public:
 	bool TaskCreate(TaskManagement task_);
 
 	//選択したオブジェクトを削除する
-	bool TaskRemove();
+	bool TaskRemove(int32 id_);
 
 	//指定したIDを持つタスクオブジェクトを一つ返す
 	TaskObject::SP TaskSearch(int32 id_);

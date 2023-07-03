@@ -14,7 +14,7 @@ class Start :public App::Scene
 	//ボタン用矩形
 	RoundRect buttonRect{
 		Arg::center = Point{0,0},
-		Point{500,100},10
+		Point{700,100},10
 	};
 public:
 	Start(const InitData& init);
