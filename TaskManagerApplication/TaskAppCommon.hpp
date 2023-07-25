@@ -30,8 +30,11 @@ struct AppDate {
 	//
 	bool isCreate;				//新規作成ならtrue
 
-	TaskObject EditBox;			//編集用データ
+	enum class EditMode { Non, Create, Edit };
+	EditMode editMode;
 
+	TaskObject EditBox;			//編集用データ
+	//Optional<TaskObject> EditBox;
 	FilePath fp;
 
 	Array<TaskObject::SP> vec;

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------------
 // タスク管理アプリ/タスク一覧
-// 作　成　者：長谷川英一
+// 作　成　者：長谷川勇一朗
 // 作成年月日：2023/3/22
 // 機　　　能：タスクの一覧表示
 //-----------------------------------------------------------------------------
@@ -13,6 +13,7 @@ class TaskList :public App::Scene
 	Array<TaskObject::SP> add;
 
 	Optional<int> selectNum;
+	bool isChanged;	//変更されたか？
 
 public:
 	TaskList(const InitData& init);
@@ -20,22 +21,18 @@ public:
 	void update() override;
 	void draw() const override;
 	
-
 	//以下はこのシーンで処理をする
-
 
 	//data.taskに処理を行う
 	bool LoadData();	//ファイルの読み込みを行う
-
 	bool SaveDate();	//ファイルの保存を行う
-
 
 	//タスクオブジェクトを生成する
 	bool TaskCreate(TaskManagement task_);
 
 	//選択したオブジェクトを削除する
-	bool TaskRemove();
+	bool TaskRemove(int32 id_);
 
-	//タスクオブジェクトの検索
+	//指定したIDを持つタスクオブジェクトを一つ返す
 	TaskObject::SP TaskSearch(int32 id_);
 };

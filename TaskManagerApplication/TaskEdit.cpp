@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------------
 // タスク管理アプリ/タスク編集
-// 作　成　者：長谷川英一
+// 作　成　者：長谷川勇一朗
 // 作成年月日：2023/3/24
 // 機　　　能：タスクの新規作成/概要表示/編集をすべて行えます
 //-----------------------------------------------------------------------------
@@ -8,7 +8,7 @@
 #include "TaskEdit.hpp"
 TaskEdit::TaskEdit(const InitData& init)
 	: IScene{ init }
-	, text{ U"" }
+	//, text{ U"" }
 	, selectPriority{ 1 }
 	, selectSituation{ 0 }
 {
@@ -16,7 +16,7 @@ TaskEdit::TaskEdit(const InitData& init)
 
 
 	//新規作成でなければ（編集なら）
-	if (not getData().isCreate) {
+	if (getData().editMode == AppDate::EditMode::Edit) {
 		//現在のデータを読み込む
 		TaskManagement data = getData().EditBox.GetTaskDate();
 		titleLS.text = data.GetTaskTitle();
@@ -34,7 +34,7 @@ TaskEdit::TaskEdit(const InitData& init)
 
 		managerLS.text = data.GetTaskManager();
 	}
-	else {
+	else if(getData().editMode == AppDate::EditMode::Create){
 		//新規作成なら
 		titleLS.text = U"タイトル";
 		descriptionLS.text = U"説明";
@@ -65,10 +65,12 @@ void TaskEdit::update() {
 
 	SimpleGUI::TextBox(managerLS, Vec2{ 100,550 }, 1080, 50);
 
+	//締切日入力欄のいずれかで入力があれば、
 	if (SimpleGUI::TextBox(deadlineYearLS, Vec2{ 760,397 }, 70, 4) ||
 		SimpleGUI::TextBox(deadlineMonthLS, Vec2{ 870,397 }, 70, 2) ||
 		SimpleGUI::TextBox(deadlineDayLS, Vec2{ 970,397 }, 70, 2)) {
 
+		//文字列に半角数字があれば置き換える。置き換えれない場合、-1を返す。
 		deadlineDate.year = ParseOr<int32>(deadlineYearLS.text, -1);
 		deadlineDate.month = ParseOr<int32>(deadlineMonthLS.text, -1);
 		deadlineDate.day = ParseOr<int32>(deadlineDayLS.text, -1);
@@ -76,12 +78,12 @@ void TaskEdit::update() {
 
 
 	//アクション
-	if (SimpleGUI::Button(getData().isCreate ? U"作成" : U"保存", Vec2{ 850,600 }, 150)) {
+	if (SimpleGUI::Button(getData().editMode == AppDate::EditMode::Create ? U"作成(Ctrl+Enter)" : U"保存(Ctrl+Enter)", Vec2{ 820,600 }, 180) || (KeyControl + KeyEnter).down()) {
 		//データ
-		if (deadlineDate.isValid() &&
-			titleLS.text.size() > 0 &&
-			descriptionLS.text.size() > 0 &&
-			managerLS.text.size() > 0
+		if (deadlineDate.isValid() &&			//日付が正しいか?
+			titleLS.text.size() > 0 &&			//タイトル入力欄が空欄でないか？
+			descriptionLS.text.size() > 0 &&	//タスク説明入力欄が空欄でないか？
+			managerLS.text.size() > 0			//管理者入力欄が空欄でないか？
 			) {
 			//すべてのデータが正しく入力されていれば
 
@@ -97,13 +99,16 @@ void TaskEdit::update() {
 			data.SetTaskManager(managerLS.text);				//担当者
 
 			getData().EditBox.SetTaskDate(data);
-			changeScene(State::TaskList, 0.1s);
+			changeScene(State::TaskList, 0.1s);					//シーンを置き換える。
 		}
 		else {
 			System::MessageBoxOK(U"データが入力されていないか、日付が間違っている可能性があります。", MessageBoxStyle::Warning);
 		}
 	}
-	if (SimpleGUI::Button(U"キャンセル", Vec2{ 1030,600 }, 150)) {
+	if (SimpleGUI::Button(U"キャンセル(ESC)", Vec2{ 1000,600 }, 180) || KeyEscape.down()) {
+		if (getData().editMode == AppDate::EditMode::Create) {
+			getData().editMode = AppDate::EditMode::Non;
+		}
 		changeScene(State::TaskList, 0.1s);
 	}
 }
@@ -126,10 +131,12 @@ void TaskEdit::draw() const {
 
 	FontAsset(U"CreateFont")(U"作成日：{: >4}年{: >2}月{: >2}日"_fmt(createDate.year, createDate.month, createDate.day))
 		.draw(Vec2{ 640,300 }, Palette::Green);
-	FontAsset(U"CreateFont")(U"締切日：     年     月     日")
+	FontAsset(U"CreateFont")(U"締切日：        年       月       日")
 		.draw(Vec2{ 640,400 }, Palette::Green);
 
+	//入力された日付が正しいかどうかを審査する。
 	if (not deadlineDate.isValid()) {
+		//間違っていたら
 		FontAsset(U"CreateFont")(U"日付が正しくありません。")
 			.draw(Vec2{ 640,450 }, Palette::Darkred);
 	}

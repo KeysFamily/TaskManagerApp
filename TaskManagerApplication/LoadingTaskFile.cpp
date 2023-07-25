@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------------
 // タスク管理アプリ/ファイル読込処理
-// 作　成　者：長谷川英一
+// 作　成　者：長谷川勇一朗
 // 作成年月日：2023/3/21
 // 機　　　能：タスクファイルの読み込み
 //-----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ LoadingTaskFile::LoadingTaskFile(const InitData& init)
 	else {
 		isNoFile = true;
 	}
-	System::SetTerminationTriggers({});
+	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
 
 }
 
@@ -63,13 +63,14 @@ void LoadingTaskFile::update() {
 
 	//ボタン表示
 	//開く。もし選択されていなければ、このボタンは押せないようにする。
-	if (SimpleGUI::Button(U"このファイルを開く", Vec2{ 800,575 }, 430, ls.selectedItemIndex.has_value())) {
+	if (SimpleGUI::Button(U"このファイルを開く(Enter)", Vec2{ 800,575 }, 430, ls.selectedItemIndex.has_value())
+		|| (KeyEnter.down() && ls.selectedItemIndex.has_value())) {
 		getData().fp += ls.items[*ls.selectedItemIndex] + U'/';
 		getData().isFileOpen = false;	//ファイルを開いた。
 		changeScene(State::TaskList, 0.1s);
 	}
 
-	if (SimpleGUI::Button(U"キャンセル", Vec2{ 800,625 }, 430)) {
+	if (SimpleGUI::Button(U"キャンセル(ESC)", Vec2{ 800,625 }, 430) || KeyEscape.down()) {
 		//スタート画面に戻る
 		changeScene(State::Start, 0.1s);
 	}

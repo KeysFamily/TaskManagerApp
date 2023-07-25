@@ -1,9 +1,19 @@
-# TaskManagerApp
-タスク管理アプリケーションです。
-Siv3Dとクラスの学習、自己支援を目的に作成しました。
+# タスクボード
+タスクツールです。ホワイトボードなどに付箋を貼るイメージでタスクを管理できます。
 # 製作期間
-2023年3月中旬～同年同月下旬
-# 製作者
-長谷川 勇一朗
+2023年3月中旬～2023年3月下旬
 # 使用言語
-Siv3D C++
+Siv3D(0.6.6) C++
+## 制作時に追加したファイル
+- CreateNewTaskFile(.hpp .cpp)
+- LoadingTaskFile(.hpp .cpp)
+- Start(.hpp .cpp)
+- TaskAppCommon.cpp
+- TaskEdit(.hpp .cpp)
+- TaskList(.hpp .cpp)
+- TaskManagement(.hpp .cpp)
+- TaskObject(.hpp .cpp)
+# 特に力を入れたもしくは工夫したファイル
+- TaskList(.hpp .cpp)
+- TaskManagement(.hpp .cpp)
+- TaskObject(.hpp .cpp)
